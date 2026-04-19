@@ -1353,6 +1353,9 @@ async def get_gmail_message_content(
         decoded_raw = _decode_raw_mime_content(message_raw.get("raw", ""))
 
         content_lines = _format_message_header_lines(headers)
+        label_ids = message_metadata.get("labelIds", [])
+        if label_ids:
+            content_lines.append(f"Labels: {', '.join(label_ids)}")
         content_lines.append(f"\n--- RAW MIME ---\n{decoded_raw}")
         return "\n".join(content_lines)
 
@@ -1381,6 +1384,9 @@ async def get_gmail_message_content(
     attachments = _extract_attachments(payload)
 
     content_lines = _format_message_header_lines(headers)
+    label_ids = message_metadata.get("labelIds", [])
+    if label_ids:
+        content_lines.append(f"Labels: {', '.join(label_ids)}")
     content_lines.append(f"\n--- BODY ---\n{body_data or '[No text/plain body found]'}")
 
     # Add attachment information if present
@@ -1526,6 +1532,9 @@ async def get_gmail_messages_content_batch(
                     msg_output = "\n".join(
                         _format_message_header_lines(headers, message_id=mid)
                     )
+                    label_ids = message.get("labelIds", [])
+                    if label_ids:
+                        msg_output += f"\nLabels: {', '.join(label_ids)}"
                     msg_output += f"\nWeb Link: {_generate_gmail_web_url(mid)}\n"
 
                     output_messages.append(msg_output)
@@ -1553,6 +1562,9 @@ async def get_gmail_messages_content_batch(
                     msg_output = "\n".join(
                         _format_message_header_lines(headers, message_id=mid)
                     )
+                    label_ids = message.get("labelIds", [])
+                    if label_ids:
+                        msg_output += f"\nLabels: {', '.join(label_ids)}"
                     msg_output += f"\nWeb Link: {_generate_gmail_web_url(mid)}\n"
                     msg_output += f"\n--- {body_label} ---\n{body_data}\n"
 
